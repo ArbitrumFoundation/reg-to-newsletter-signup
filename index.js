@@ -38,18 +38,18 @@ export default {
         memberPayload.name = name;
       }
 
-      // Try to create the member with the Builder label
       const ghostRes = await fetch(`${ghostUrl}/ghost/api/admin/members/`, {
         method: 'POST',
         headers: {
           'Authorization': `Ghost ${jwt}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(memberPayload)
+        body: JSON.stringify({
+          members: [memberPayload]
+        })
       });
 
-      // 201 is created, 409 usually means already exists
-      if (!ghostRes.ok && ghostRes.status !== 409) {
+      if (!ghostRes.ok && ghostRes.status !== 409 && ghostRes.status !== 422) {
         const text = await ghostRes.text();
         return new Response(
           `Ghost error ${ghostRes.status}: ${text}`,
